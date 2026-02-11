@@ -1,4 +1,4 @@
-# ¡Hola! Soy [Andrea Martínez] 👩‍💻✨
+# ¡Hola! Soy Andrea Martínez 👩‍💻✨
 ### Ingeniera en Tecnologías de la Información | 2 Años de Experiencia 🚀
 
 ¡Bienvenida/o a mi perfil! Soy una profesional de TI enfocada en crear soluciones tecnológicas eficientes y escalables. Me apasiona el aprendizaje continuo y la resolución de problemas a través del código.
@@ -15,10 +15,10 @@ Con **2 años de trayectoria laboral**, he desarrollado una visión integral de 
 
 ---
 
-## 🚀 Proyectos Destacados
+//## 🚀 Proyectos Destacados
 
-| **Nombre del Proyecto** | Una solución para [problema] usando [tecnología]. | ⚛️ React, 🟢 Node | [🔗 Ver Proyecto](#) |
-| **Nombre del Proyecto** | Sistema de gestión para [objetivo]. | 🐍 Python, 🗄️ SQL | [🔗 Ver Proyecto](#) |
+//| **Nombre del Proyecto** | Una solución para [problema] usando [tecnología]. | ⚛️ React, 🟢 Node | [🔗 Ver Proyecto](#) |
+//| **Nombre del Proyecto** | Sistema de gestión para [objetivo]. | 🐍 Python, 🗄️ SQL | [🔗 Ver Proyecto](#) |
 
 ---
 
@@ -36,7 +36,7 @@ Con **2 años de trayectoria laboral**, he desarrollado una visión integral de 
 
 * 💼 **LinkedIn:** [linkedin.com/in/andreamaruz](https://www.linkedin.com/in/andreamaruz/)
 * 📧 **Correo:** [andreamartinezdl1@gmail.com](mailto:andreamartinezdl1@gmail.com)
-* 🌐 **Portafolio:** [tu-sitio-web.com](https://tu-sitio.com)
+* 🌐 **Portafolio:** [andreamaruz.github.io/](https://andreamaruz.github.io/)
 
 ---
 *“Transformando código en vida real.”* ✨
