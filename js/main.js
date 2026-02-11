@@ -1,5 +1,6 @@
 /* ===================================================================
- * Monica 1.0.0 - Main JS
+ * Augustine 1.0.0 - Main JS
+ *
  *
  * ------------------------------------------------------------------- */
 
@@ -7,19 +8,53 @@
 
     'use strict';
 
-    const cfg = {
 
-        // MailChimp URL
-        mailChimpURL : 'https://facebook.us1.list-manage.com/subscribe/post?u=1abf75f6981256963a47d197a&amp;id=37c6d8f4d6' 
+    /* animations
+    * -------------------------------------------------- */
+    const tl = anime.timeline( {
+        easing: 'easeInOutCubic',
+        duration: 800,
+        autoplay: false
+    })
+    .add({
+        targets: '#loader',
+        opacity: 0,
+        duration: 1000,
+        begin: function(anim) {
+            window.scrollTo(0, 0);
+        }
+    })
+    .add({
+        targets: '#preloader',
+        opacity: 0,
+        complete: function(anim) {
+            document.querySelector("#preloader").style.visibility = "hidden";
+            document.querySelector("#preloader").style.display = "none";
+        }
+    })
+    .add({
+        targets: '.s-header',
+        translateY: [-100, 0],
+        opacity: [0, 1]
+    }, '-=200')
+    .add({
+        targets: '.s-intro__bg',
+        opacity: [0, 1],
+        duration: 1000,
+    })
+    .add({
+        targets: ['.animate-on-load'],
+        translateY: [100, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(400)
+    });
 
-    };
 
 
    /* preloader
     * -------------------------------------------------- */
     const ssPreloader = function() {
 
-        const siteBody = document.querySelector('body');
         const preloader = document.querySelector('#preloader');
         if (!preloader) return;
 
@@ -28,17 +63,11 @@
         window.addEventListener('load', function() {
             html.classList.remove('ss-preload');
             html.classList.add('ss-loaded');
-            
-            preloader.addEventListener('transitionend', function afterTransition(e) {
-                if (e.target.matches('#preloader'))  {
-                    siteBody.classList.add('ss-show');
-                    e.target.style.display = 'none';
-                    preloader.removeEventListener(e.type, afterTransition);
-                }
-            });
+            tl.play();
         });
 
     }; // end ssPreloader
+
 
 
    /* mobile menu
@@ -46,7 +75,7 @@
     const ssMobileMenu = function() {
 
         const toggleButton = document.querySelector('.s-header__menu-toggle');
-        const mainNavWrap = document.querySelector('.s-header__nav');
+        const mainNavWrap = document.querySelector('.s-header__nav-wrap');
         const siteBody = document.querySelector('body');
 
         if (!(toggleButton && mainNavWrap)) return;
@@ -59,7 +88,7 @@
 
         mainNavWrap.querySelectorAll('.s-header__nav a').forEach(function(link) {
 
-            link.addEventListener("click", function(event) {
+            link.addEventListener("click", function(e) {
 
                 // at 900px and below
                 if (window.matchMedia('(max-width: 900px)').matches) {
@@ -81,204 +110,161 @@
     }; // end ssMobileMenu
 
 
+
+   /* sticky header
+    * ------------------------------------------------------ */
+    const ssStickyHeader = function() {
+
+        const hdr = document.querySelector('.s-header');
+        if (!hdr) return;
+
+        // const triggerHeight = window.pageYOffset + hdr.getBoundingClientRect().top;
+        const triggerHeight = 1;
+
+        window.addEventListener('scroll', function () {
+
+            let loc = window.scrollY;
+
+            if (loc > triggerHeight) {
+                hdr.classList.add('sticky');
+            } else {
+                hdr.classList.remove('sticky');
+            }
+
+        });
+
+    }; // end ssStickyHeader
+
+
+
+   /* photoswipe
+    * ----------------------------------------------------- */
+    const ssPhotoswipe = function() {
+
+        const items = [];
+        const pswp = document.querySelectorAll('.pswp')[0];
+        const folioItems = document.querySelectorAll('.folio-item');
+
+        if (!(pswp && folioItems)) return;
+
+        folioItems.forEach(function(folioItem) {
+
+            let folio = folioItem;
+            let thumbLink = folio.querySelector('.folio-item__thumb-link');
+            let title = folio.querySelector('.folio-item__title');
+            let caption = folio.querySelector('.folio-item__caption');
+            let titleText = '<h4>' + title.innerHTML + '</h4>';
+            let captionText = caption.innerHTML;
+            let href = thumbLink.getAttribute('href');
+            let size = thumbLink.dataset.size.split('x'); 
+            let width  = size[0];
+            let height = size[1];
+
+            let item = {
+                src  : href,
+                w    : width,
+                h    : height
+            }
+
+            if (caption) {
+                item.title = titleText.trim() + captionText.trim();
+            }
+
+            items.push(item);
+
+        });
+
+        // bind click event
+        folioItems.forEach(function(folioItem, i) {
+
+            let thumbLink = folioItem.querySelector('.folio-item__thumb-link');
+
+            thumbLink.addEventListener('click', function(e) {
+
+                e.preventDefault();
+
+                let options = {
+                    index: i,
+                    showHideOpacity: true
+                }
+
+                // initialize PhotoSwipe
+                let lightBox = new PhotoSwipe(pswp, PhotoSwipeUI_Default, items, options);
+                lightBox.init();
+            });
+
+        });
+
+    };  // end ssPhotoSwipe
+
+
+
+   /* animate elements if in viewport
+    * ------------------------------------------------------ */
+    const ssAnimateOnScroll = function() {
+
+        const blocks = document.querySelectorAll('[data-animate-block]');
+
+        window.addEventListener('scroll', animateOnScroll);
+
+        function animateOnScroll() {
+
+            let scrollY = window.pageYOffset;
+
+            blocks.forEach(function(current) {
+
+                const viewportHeight = window.innerHeight;
+                const triggerTop = (current.offsetTop + (viewportHeight * .1)) - viewportHeight;
+                const blockHeight = current.offsetHeight;
+                const blockSpace = triggerTop + blockHeight;
+                const inView = scrollY > triggerTop && scrollY <= blockSpace;
+                const isAnimated = current.classList.contains('ss-animated');
+
+                if (inView && (!isAnimated)) {
+
+                    anime({
+                        targets: current.querySelectorAll('[data-animate-el]'),
+                        opacity: [0, 1],
+                        translateY: [100, 0],
+                        delay: anime.stagger(200, {start: 200}),
+                        duration: 600,
+                        easing: 'easeInOutCubic',
+                        begin: function(anim) {
+                            current.classList.add('ss-animated');
+                        }
+                    });
+                }
+            });
+        }
+
+    }; // end ssAnimateOnScroll
+
+
+
    /* swiper
     * ------------------------------------------------------ */ 
     const ssSwiper = function() {
 
-        const homeSliderSwiper = new Swiper('.home-slider', {
+        const mySwiper = new Swiper('.swiper', {
 
             slidesPerView: 1,
+            effect: 'slide',
+            spaceBetween: 160,
+            centeredSlides: true,
+            speed: 1000,
+            navigation: {
+                nextEl: ".testimonial-slider__next",
+                prevEl: ".testimonial-slider__prev",
+            },
             pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
-            },
-            breakpoints: {
-                // when window width is > 400px
-                401: {
-                    slidesPerView: 1,
-                    spaceBetween: 20
-                },
-                // when window width is > 800px
-                801: {
-                    slidesPerView: 2,
-                    spaceBetween: 40
-                },
-                // when window width is > 1330px
-                1331: {
-                    slidesPerView: 3,
-                    spaceBetween: 48
-                },
-                // when window width is > 1773px
-                1774: {
-                    slidesPerView: 4,
-                    spaceBetween: 48
-                }
             }
-        });
 
-        const pageSliderSwiper = new Swiper('.page-slider', {
-
-            slidesPerView: 1,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            breakpoints: {
-                // when window width is > 400px
-                401: {
-                    slidesPerView: 1,
-                    spaceBetween: 20
-                },
-                // when window width is > 800px
-                801: {
-                    slidesPerView: 2,
-                    spaceBetween: 40
-                },
-                // when window width is > 1240px
-                1241: {
-                    slidesPerView: 3,
-                    spaceBetween: 48
-                }
-            }
         });
 
     }; // end ssSwiper
 
-
-   /* mailchimp form
-    * ---------------------------------------------------- */ 
-    const ssMailChimpForm = function() {
-
-        const mcForm = document.querySelector('#mc-form');
-
-        if (!mcForm) return;
-
-        // Add novalidate attribute
-        mcForm.setAttribute('novalidate', true);
-
-        // Field validation
-        function hasError(field) {
-
-            // Don't validate submits, buttons, file and reset inputs, and disabled fields
-            if (field.disabled || field.type === 'file' || field.type === 'reset' || field.type === 'submit' || field.type === 'button') return;
-
-            // Get validity
-            let validity = field.validity;
-
-            // If valid, return null
-            if (validity.valid) return;
-
-            // If field is required and empty
-            if (validity.valueMissing) return 'Please enter an email address.';
-
-            // If not the right type
-            if (validity.typeMismatch) {
-                if (field.type === 'email') return 'Please enter a valid email address.';
-            }
-
-            // If pattern doesn't match
-            if (validity.patternMismatch) {
-
-                // If pattern info is included, return custom error
-                if (field.hasAttribute('title')) return field.getAttribute('title');
-
-                // Otherwise, generic error
-                return 'Please match the requested format.';
-            }
-
-            // If all else fails, return a generic catchall error
-            return 'The value you entered for this field is invalid.';
-
-        };
-
-        // Show error message
-        function showError(field, error) {
-
-            // Get field id or name
-            let id = field.id || field.name;
-            if (!id) return;
-
-            let errorMessage = field.form.querySelector('.mc-status');
-
-            // Update error message
-            errorMessage.classList.remove('success-message');
-            errorMessage.classList.add('error-message');
-            errorMessage.innerHTML = error;
-
-        };
-
-        // Display form status (callback function for JSONP)
-        window.displayMailChimpStatus = function (data) {
-
-            // Make sure the data is in the right format and that there's a status container
-            if (!data.result || !data.msg || !mcStatus ) return;
-
-            // Update our status message
-            mcStatus.innerHTML = data.msg;
-
-            // If error, add error class
-            if (data.result === 'error') {
-                mcStatus.classList.remove('success-message');
-                mcStatus.classList.add('error-message');
-                return;
-            }
-
-            // Otherwise, add success class
-            mcStatus.classList.remove('error-message');
-            mcStatus.classList.add('success-message');
-        };
-
-        // Submit the form 
-        function submitMailChimpForm(form) {
-
-            let url = cfg.mailChimpURL;
-            let emailField = form.querySelector('#mce-EMAIL');
-            let serialize = '&' + encodeURIComponent(emailField.name) + '=' + encodeURIComponent(emailField.value);
-
-            if (url == '') return;
-
-            url = url.replace('/post?u=', '/post-json?u=');
-            url += serialize + '&c=displayMailChimpStatus';
-
-            // Create script with url and callback (if specified)
-            var ref = window.document.getElementsByTagName( 'script' )[ 0 ];
-            var script = window.document.createElement( 'script' );
-            script.src = url;
-
-            // Create global variable for the status container
-            window.mcStatus = form.querySelector('.mc-status');
-            window.mcStatus.classList.remove('error-message', 'success-message')
-            window.mcStatus.innerText = 'Submitting...';
-
-            // Insert script tag into the DOM
-            ref.parentNode.insertBefore( script, ref );
-
-            // After the script is loaded (and executed), remove it
-            script.onload = function () {
-                this.remove();
-            };
-
-        };
-
-        // Check email field on submit
-        mcForm.addEventListener('submit', function (event) {
-
-            event.preventDefault();
-
-            let emailField = event.target.querySelector('#mce-EMAIL');
-            let error = hasError(emailField);
-
-            if (error) {
-                showError(emailField, error);
-                emailField.focus();
-                return;
-            }
-
-            submitMailChimpForm(this);
-
-        }, false);
-
-    }; // end ssMailChimpForm
 
 
    /* alert boxes
@@ -294,7 +280,7 @@
                     e.stopPropagation();
                     e.target.parentElement.classList.add('hideit');
 
-                    setTimeout(function() {
+                    setTimeout(function(){
                         box.style.display = 'none';
                     }, 500)
                 }
@@ -304,7 +290,8 @@
     }; // end ssAlertBoxes
 
 
-    /* Back to Top
+
+    /* back to top
     * ------------------------------------------------------ */
     const ssBackToTop = function() {
 
@@ -327,9 +314,10 @@
     }; // end ssBackToTop
 
 
+
    /* smoothscroll
     * ------------------------------------------------------ */
-    const ssMoveTo = function() {
+    const ssMoveTo = function(){
 
         const easeFunctions = {
             easeInQuad: function (t, b, c, d) {
@@ -370,15 +358,19 @@
     }; // end ssMoveTo
 
 
-   /* Initialize
+
+   /* initialize
     * ------------------------------------------------------ */
     (function ssInit() {
 
         ssPreloader();
         ssMobileMenu();
+        ssStickyHeader();
+        ssPhotoswipe();
+        ssAnimateOnScroll();
         ssSwiper();
-        ssMailChimpForm();
         ssAlertBoxes();
+        ssBackToTop();
         ssMoveTo();
 
     })();
