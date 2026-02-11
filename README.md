@@ -13,15 +13,6 @@ Con **2 años de trayectoria laboral**, he desarrollado una visión integral de 
 * 🎯 **Meta actual:** Seguir creciendo en el ecosistema de Desarrollo Web.
 * 🤝 **Colaboración:** Creo firmemente en el trabajo en equipo y la comunicación efectiva y respetuosa.
 
----
-
-//## 🚀 Proyectos Destacados
-
-//| **Nombre del Proyecto** | Una solución para [problema] usando [tecnología]. | ⚛️ React, 🟢 Node | [🔗 Ver Proyecto](#) |
-//| **Nombre del Proyecto** | Sistema de gestión para [objetivo]. | 🐍 Python, 🗄️ SQL | [🔗 Ver Proyecto](#) |
-
----
-
 ## 🛠️ Stack Tecnológico
 
 * **Lenguajes:** `JavaScript` 🟨, `CSS` 🟦, `Java` ☕
